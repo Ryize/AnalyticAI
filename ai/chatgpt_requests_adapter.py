@@ -34,11 +34,10 @@ class ChatGPTRequestsAdapter:
         self.api_key = api_key or TOKEN
         self.logger = Logger()
 
-    # ---------- публичный метод ----------
+    # публичный метод
     def analyze(self, headlines: Iterable[str]) -> List[Dict[str, Any]]:
         headlines = list(headlines)
         raw = self._call_with_retry(headlines)
-
         try:
             parsed: List[Dict[str, Any]] = json.loads(raw)
             if len(parsed) != len(headlines):
@@ -65,7 +64,7 @@ class ChatGPTRequestsAdapter:
                     f"in {pause:.1f}s")
                 time.sleep(pause)
 
-    # ---------- единственный HTTP‑запрос ----------
+    # единственный HTTP‑запрос
     def _single_request(self, headlines: List[str]) -> str:
         payload = {
             "model": MODEL,
@@ -76,7 +75,6 @@ class ChatGPTRequestsAdapter:
                 {"role": "user",
                  "content": json.dumps(headlines, ensure_ascii=False)}
             ]
-            #  !!! убрали response_format — json_object не подходит для массива
         }
         headers = {
             "Content-Type": "application/json",
@@ -86,4 +84,4 @@ class ChatGPTRequestsAdapter:
         r = requests.post(ENDPOINT, headers=headers, json=payload)
         if r.status_code != 200:
             raise requests.HTTPError(f"{r.status_code}: {r.text}")
-        return r.json()["choices"][0]["message"]["content"].strip()
+        return r.json()["choices"][0]["message"]["content"].strip().replace('json', '')

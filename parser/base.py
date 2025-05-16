@@ -21,6 +21,10 @@ class BaseHTMLParser(NewsParser):
                                  class_=self.css_class) if self.css_class else soup.find_all(
             self.tag)
         headlines: List[str] = [el.get_text(strip=True) for el in elements]
+        res = []
+        for i in headlines:
+            if i[0].isdigit():
+                res += i.split('назад')[1:]
         Logger().log(
-            f"{self.__class__.__name__}: {len(headlines)} articles found")
-        return headlines
+            f"{self.__class__.__name__}: {len(res)} articles found")
+        return res

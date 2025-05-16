@@ -1,3 +1,4 @@
+from analysis.market_context import MarketContext
 from filters.keyword import KeywordFilter
 from filters.length import LengthFilter
 from aggregator import NewsAggregator
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     adapter = ChatGPTRequestsAdapter()
     analyzed = adapter.analyze(headlines)
 
-    for item in analyzed:
-        print(item["headline"])
-        print(item["sentiment"], end="\n\n")
+    context = MarketContext()
+    context.update_from_analysis(analyzed)
+
+    print(context.forecast())
